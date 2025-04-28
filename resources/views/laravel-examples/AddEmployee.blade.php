@@ -39,10 +39,10 @@
                             <input type="text" name="mobile" class="form-control" id="mobile" placeholder="Enter mobile number" required>
                         </div>
 
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="emp_id" class="form-label">Employee ID</label>
                             <input type="text" name="employee_id" class="form-control" id="emp_id" placeholder="Enter employee ID" required>
-                        </div>
+                        </div> -->
 
                         <div class="mb-3">
                             <label for="department" class="form-label">Department</label>

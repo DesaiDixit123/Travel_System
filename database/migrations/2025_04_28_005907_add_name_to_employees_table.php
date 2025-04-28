@@ -6,24 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         Schema::table('employees', function (Blueprint $table) {
-            $table->string('company_name')->after('limit');
+            $table->string('name')->after('id'); // or wherever you want the column to appear
         });
     }
     
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('employees', function (Blueprint $table) {
-            //
+            $table->dropColumn('name');
         });
     }
+    
 };

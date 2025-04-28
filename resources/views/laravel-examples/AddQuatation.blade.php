@@ -15,7 +15,7 @@
                     <form id="stepOneForm">
                         @csrf
                         <div class="mb-3">
-                            <label for="emp_id" class="form-label">Employee ID</label>
+                            <label for="employee_id" class="form-label">Employee ID</label>
                             <input type="text" name="employee_id" class="form-control" id="employee_id" placeholder="Enter employee ID" required>
                         </div>
 
@@ -32,7 +32,6 @@
                     {{-- Step 2: Corporate & Quotation Info --}}
                     <form action="{{ route('quotations.store') }}" method="POST" id="quotationForm" style="display: none;">
                         @csrf
-                   
 
                         <input type="hidden" name="employee_id_hidden" id="employee_id_hidden">
                         <input type="hidden" name="employee_mobile_hidden" id="employee_mobile_hidden">
@@ -50,6 +49,10 @@
                         <div class="mb-3">
                             <label for="corporate_email" class="form-label">Corporate Email</label>
                             <input type="email" name="corporate_email" class="form-control" placeholder="Enter corporate email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="corporate_email" class="form-label">Employee Email</label>
+                            <input type="email" name="employee_email" class="form-control" placeholder="Enter corporate email" required>
                         </div>
 
                         <div class="mb-3">
@@ -93,8 +96,8 @@
                         <div class="d-flex justify-content-between">
                             {{-- WhatsApp Share Button --}}
                             <button type="button" id="shareOnWhatsapp" class="btn btn-success">
-    Share on WhatsApp
-</button>
+                                Share on WhatsApp
+                            </button>
 
                             {{-- Submit Button --}}
                             <button type="submit" class="btn bg-gradient-success">Submit Quotation</button>
@@ -108,9 +111,11 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Continue Button
     document.getElementById('continueBtn').addEventListener('click', function () {
-        const empId = document.getElementById('employee_id').value;
-        const mobile = document.getElementById('mobile').value;
+        const empId = document.getElementById('employee_id').value.trim();
+        const mobile = document.getElementById('mobile').value.trim();
 
         if (empId && mobile) {
             fetch(`/api/employee-info?employee_id=${empId}&mobile=${mobile}`)
@@ -126,14 +131,15 @@
                         document.getElementById('employee_id_hidden').value = empId;
                         document.getElementById('employee_mobile_hidden').value = mobile;
 
-                        // Fill rest of the form
-                        document.querySelector('input[name="company_name"]').value = data.employee.company_name;
-                        document.querySelector('input[name="employee_name"]').value = data.employee.name;
-                        document.querySelector('input[name="limit"]').value = data.employee.limit;
-                        document.querySelector('select[name="department"]').value = data.employee.department;
+                        // Fill form fields
+                        document.querySelector('input[name="company_name"]').value = data.employee.company_name || '';
+                        document.querySelector('input[name="employee_name"]').value = data.employee.name || '';
+                        document.querySelector('input[name="limit"]').value = data.employee.limit || '';
+                        document.querySelector('select[name="department"]').value = data.employee.department || '';
 
-                        document.querySelector('input[name="corporate_mobile"]').value = data.corporate_mobile;
-                        document.querySelector('input[name="corporate_email"]').value = data.corporate_email;
+                        document.querySelector('input[name="corporate_mobile"]').value = data.corporate_mobile || '';
+                        document.querySelector('input[name="corporate_email"]').value = data.corporate_email || '';
+                        document.querySelector('input[name="employee_email"]').value = data.employee.employee_email || '';
                     } else {
                         alert('Employee not found or invalid mobile number.');
                     }
@@ -147,45 +153,42 @@
         }
     });
 
-
-
+    // Share on WhatsApp Button
     document.getElementById('shareOnWhatsapp').addEventListener('click', function () {
-        const employeeName = document.querySelector('input[name="employee_name"]').value;
-        const employeeMobile = document.getElementById('mobile').value;
-        const companyName = document.querySelector('input[name="company_name"]').value;
-        const department = document.querySelector('select[name="department"]').value;
-        const limit = document.querySelector('input[name="limit"]').value;
-        const flight = document.querySelector('input[name="flight"]').value;
-        const otherExpenses = document.querySelector('textarea[name="other_expenses"]').value;
-        const quotation = document.querySelector('textarea[name="quotation"]').value;
+    const employeeName = document.querySelector('input[name="employee_name"]').value.trim();
+        const quotation = document.querySelector('textarea[name="quotation"]').value.trim();
 
-        // Get corporate mobile number
-        let corporateMobile = document.querySelector('input[name="corporate_mobile"]').value;
-        corporateMobile = corporateMobile.replace(/\D/g, ''); // remove non-numeric characters
+        // Dynamically get the quotation ID from the URL (assuming URL is in the format /quotations/{quotationId})
+        const urlParts = window.location.pathname.split('/');
+        const quotationId = urlParts[urlParts.length - 1]; // Last part of the URL is the quotation ID
 
-        if (!corporateMobile.startsWith('91')) {
-            corporateMobile = '91' + corporateMobile;
-        }
+        // Construct the preview link
+        const previewLink = `http://localhost:8000/quotations/${quotationId}`;
 
+        // Construct the WhatsApp message with only the employee name, quotation, and preview link
         const message = `
-*Quotation Details*
+*Quotation Details*:
 
 👤 *Employee Name:* ${employeeName}
-📱 *Employee Mobile:* ${employeeMobile}
-🏢 *Company Name:* ${companyName}
-🏬 *Department:* ${department}
-💰 *Hotel Limit:* ${limit}
-✈️ *Flight Details:* ${flight}
-📋 *Other Expenses:* ${otherExpenses}
 📝 *Quotation:* ${quotation}
+
+🔗 *View the quotation here:* ${previewLink}
         `.trim();
 
         const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/${corporateMobile}?text=${encodedMessage}`;
-
-        window.open(whatsappURL, '_blank');
+        
+        // Ensure that corporate mobile number is fetched correctly
+        const corporateMobile = document.querySelector('input[name="corporate_mobile"]').value.trim();
+        
+        // Check if the corporate mobile number exists
+        if (corporateMobile) {
+            const whatsappURL = `https://wa.me/${corporateMobile}?text=${encodedMessage}`;
+            window.open(whatsappURL, '_blank');
+        } else {
+            alert("Please enter a valid corporate mobile number.");
+        }
     });
-
+});
 </script>
 
 @endsection

@@ -34,7 +34,9 @@
         <div class="card-header pb-0 px-3 d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Employees</h6>
             <!-- Add Employee Button -->
+            @if(session('user_role') === 'admin')
             <a href="{{ route('employees.create') }}" class="btn add-btn">Add Employee</a>
+            @endif
         </div>
         <div class="card-body pt-4 p-3">
             <div class="table-responsive">
@@ -46,7 +48,7 @@
                             <th class="text-uppercase text-sm px-4 py-3">Employee Name</th>
                             <th class="text-uppercase text-sm px-4 py-3">Email</th>
                             <th class="text-uppercase text-sm px-4 py-3">Mobile</th>
-                            <th class="text-uppercase text-sm px-4 py-3">Employee ID</th>
+                   
                             <th class="text-uppercase text-sm px-4 py-3">Department</th>
                             <th class="text-uppercase text-sm px-4 py-3">Hotel Limit</th>
                         </tr>
@@ -59,16 +61,35 @@
                             <td class="px-4 py-3 text-sm">{{ $employee->name }}</td>
                             <td class="px-4 py-3 text-sm">{{ $employee->email }}</td>
                             <td class="px-4 py-3 text-sm">{{ $employee->mobile }}</td>
-                            <td class="px-4 py-3 text-sm">{{ $employee->employee_id }}</td>
+                       
                             <td class="px-4 py-3 text-sm">{{ $employee->department }}</td>
                             <td class="px-4 py-3 text-sm">{{ $employee->limit }}</td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
+
+<!-- Pagination Info + Links -->
+<div class="d-flex justify-content-between align-items-center mt-4 mb-4 flex-wrap">
+    <!-- Left Side: Showing X to Y of Z results -->
+    <div class="text-sm text-muted mb-2 mb-md-0">
+   
     </div>
+
+    <!-- Right Side: Pagination Buttons -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination rounded-pagination mb-0">
+        {{ $employees->links('pagination::bootstrap-5') }}
+        </ul>
+    </nav>
+</div>
+            </div>
+
+            
+        </div>
+        
+    </div>
+    
 </div>
 
 @endsection

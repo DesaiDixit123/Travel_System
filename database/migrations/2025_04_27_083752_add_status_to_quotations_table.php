@@ -9,14 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('quotations', function (Blueprint $table) {
-            $table->string('company_name')->nullable(); // Navi column add kari
+            $table->enum('status', ['pending', 'approved', 'disapproved'])->default('pending'); // Default value is 'pending'
         });
     }
-    
+
     public function down()
     {
         Schema::table('quotations', function (Blueprint $table) {
-            $table->dropColumn('company_name');
+            $table->dropColumn('status');
         });
-}
+    }
 };

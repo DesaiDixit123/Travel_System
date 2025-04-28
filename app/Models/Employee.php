@@ -11,10 +11,10 @@ class Employee extends Model
 
     // Allowed fields to be mass assigned
     protected $fillable = [
+        'id',
         'name',
         'email',
         'mobile',
-        'employee_id',
         'department',
         'limit',
         'company_name',

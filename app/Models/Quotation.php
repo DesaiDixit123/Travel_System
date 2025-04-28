@@ -9,16 +9,19 @@ class Quotation extends Model
     protected $fillable = [
         'employee_id',
         'employee_mobile',
-        'company_name',
         'corporate_mobile',
         'corporate_email',
+        'employee_email',
+        'company_name',
+        'employee_name',
         'department',
         'hotel_limit',
         'flight',
         'other_expenses',
-        'Quotation',
+        'quotation',
+        'status',
     ];
-
+    
     public function employee()
     {
         return $this->belongsTo(Employee::class);

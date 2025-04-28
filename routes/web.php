@@ -53,14 +53,20 @@ Route::group(['middleware' => 'auth'], function () {
   Route::get('/Employees', [EmployeeController::class, 'index'])->name('employees.index');
   
   Route::get('/Add-Employees', [EmployeeController::class, 'create'])->name('employees.create');
-  Route::get('/Quotations', [QuotationController::class, 'create']);
+  Route::get('/Quotations', [QuotationController::class, 'create'])->name('quotations.create');
   Route::get('/Add-Quotation', [QuotationController::class, 'index'])->name('quotations.index');
   ;
   Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
 
     Route::post('/employees/store', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::get('quotations/{quotation}/edit', [QuotationController::class, 'edit'])->name('quotations.edit');
+    Route::put('quotations/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
+    Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
 
- 
+    Route::patch('/quotations/{id}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
+    Route::patch('/quotations/{id}/disapprove', [QuotationController::class, 'disapprove'])->name('quotations.disapprove');
+    Route::patch('/quotations/{id}/setPending', [QuotationController::class, 'setPending'])->name('quotations.setPending');
     
     // Your other routes for authenticated users go here
 });
