@@ -11,7 +11,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $companies = Corporate::pluck('company_name');
-        return view('laravel-examples.AddEmployee', compact('companies'));
+        return view('Pages.AddEmployee', compact('companies'));
     }
 
     public function store(Request $request)
@@ -48,12 +48,12 @@ class EmployeeController extends Controller
             $corporate = Auth::guard('corporate')->user();
             $employees = $corporate->employees()->paginate(5); // Relationship with pagination
         } else if ($role === 'admin') {
-            $employees = Employee::paginate(5); // Admin side paginate
+            $employees = Employee::paginate(10); // Admin side paginate
         } else {
             $employees = collect(); // Empty collection
         }
     
-        return view('laravel-examples.Employess', compact('employees'));
+        return view('Pages.Employess', compact('employees'));
     }
     
 

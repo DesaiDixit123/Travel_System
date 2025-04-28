@@ -49,7 +49,7 @@
         <div class="card-header pb-0 px-3 d-flex justify-content-between align-items-center">
             <h6 class="mb-0">{{ __('Corporate Details') }}</h6>
 
-      
+           
         </div>
         <div class="card-body pt-4 p-3">
             <div class="table-responsive">

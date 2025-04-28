@@ -25,14 +25,14 @@ class QuotationController extends Controller
             ->orWhere('corporate_email', 'like', '%' . $searchQuery . '%') // Added email search
             ->orWhere('employee_id', 'like', '%' . $searchQuery . '%') // Added employee ID search
             ->orWhere('status', 'like', '%' . $searchQuery . '%') // Added status search (approved, disapproved, pending)
-            ->paginate(5); // Add pagination
+            ->paginate(10); // Add pagination
     } else {
         // If no search query, return all quotations (or use pagination as before)
-        $quotations = Quotation::paginate(5);
+        $quotations = Quotation::paginate(10);
     }
     
     // Return the view with the quotations and search query
-    return view('laravel-examples.AddQuatation', compact('quotations', 'searchQuery'));
+    return view('Pages.Quotation.AddQuatation', compact('quotations', 'searchQuery'));
 }
 
     
@@ -66,7 +66,7 @@ class QuotationController extends Controller
                     ->paginate(5);
             } else {
                 $quotations = Quotation::whereRaw("REPLACE(LOWER(company_name), ' ', '') = ?", [$companyNameNormalized])
-                    ->paginate(5);
+                    ->paginate(10);
             }
         
         } else if ($role === 'admin') {
@@ -81,55 +81,61 @@ class QuotationController extends Controller
                         ->orWhere('employee_id', 'like', '%' . $searchQuery . '%')
                         ->orWhere('status', 'like', '%' . $searchQuery . '%');
                 })
-                ->paginate(5);
+                ->paginate(10);
             } else {
-                $quotations = Quotation::paginate(5);
+                $quotations = Quotation::paginate(10);
             }
         } else {
             $quotations = collect(); // Empty collection for other roles
         }
     
         // Return the view with the quotations and the search query
-        return view('laravel-examples.Quotations', compact('quotations', 'searchQuery'));
+        return view('Pages.Quotation.Quotations', compact('quotations', 'searchQuery'));
     }
     
     // Store quotation data
-     public function store(Request $request)
-{
-    $employee = Employee::where('id', $request->employee_id_hidden)->first();
-
-    // Debugging step: Check if the email exists in employee
-    if (!$employee || !$employee->email) {
-        // Handle missing email (you can either show an error or log it)
-        return redirect()->back()->with('error', 'Employee email is missing.');
-    }
-
-    // Extra checking - lowercase + remove all spaces
-    $employeeCompanyName = strtolower(preg_replace('/\s+/', '', $employee->company_name));
-
-    $corporate = Corporate::get()->filter(function($corp) use ($employeeCompanyName) {
-        $corpCompanyName = strtolower(preg_replace('/\s+/', '', $corp->company_name));
-        return $corpCompanyName === $employeeCompanyName;
-    })->first();
-
-    Quotation::create([
-        'employee_id'       => $employee->id,
-        'employee_mobile'   => $employee->mobile,
-        'corporate_mobile'  => $corporate->contact_number ?? 'N/A',
-        'corporate_email'   => $corporate->email ?? null,
-        'employee_email'    => $request->employee_email, // 👈
-        'company_name'      => $request->company_name,
-        'employee_name'     => $employee->name,
-        'department'        => $employee->department,
-        'hotel_limit'       => $employee->limit,
-        'flight'            => $request->flight,
-        'other_expenses'    => $request->other_expenses,
-        'quotation'         => $request->Quotation, // 👈
-    ]);
+    public function store(Request $request)
+    {
+        $employee = Employee::where('id', $request->employee_id_hidden)->first();
+        
+        if (!$employee || !$employee->email) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee email is missing.',
+            ], 400); // 400 means Bad Request
+        }
     
-    return redirect()->back()->with('success', 'Quotation submitted successfully!');
-}
-
+        $employeeCompanyName = strtolower(preg_replace('/\s+/', '', $employee->company_name));
+        
+        $corporate = Corporate::get()->filter(function($corp) use ($employeeCompanyName) {
+            $corpCompanyName = strtolower(preg_replace('/\s+/', '', $corp->company_name));
+            return $corpCompanyName === $employeeCompanyName;
+        })->first();
+    
+        // Create the quotation and store it in a variable
+        $quotation = Quotation::create([
+            'employee_id'       => $employee->id,
+            'employee_mobile'   => $employee->mobile,
+            'corporate_mobile'  => $corporate->contact_number ?? 'N/A',
+            'corporate_email'   => $corporate->email ?? null,
+            'employee_email'    => $employee->email,
+            'company_name'      => $request->company_name,
+            'employee_name'     => $employee->name,
+            'department'        => $employee->department,
+            'hotel_limit'       => $employee->limit,
+            'flight'            => $request->flight,
+            'other_expenses'    => $request->other_expenses,
+            'quotation'         => $request->quotation, 
+        ]);
+    
+        // Return the quotation ID in the response
+        return response()->json([
+            'success' => true,
+            'quotation_id' => $quotation->id, // Return the correct quotation ID
+            'message' => 'Quotation saved successfully!',
+        ], 201); // 201 means Created
+    }
+    
     // API for employee & corporate info
     public function getEmployeeInfo(Request $request)
     {
@@ -177,14 +183,14 @@ class QuotationController extends Controller
 public function show($id)
 {
     $quotation = Quotation::findOrFail($id);
-    return view('laravel-examples.viewQuotation', compact('quotation'));
+    return view('Pages.Quotation.viewQuotation', compact('quotation'));
 }
 
 // Show edit form
 public function edit($id)
 {
     $quotation = Quotation::findOrFail($id);
-    return view('laravel-examples.editQuotation', compact('quotation'));
+    return view('Pages.Quotation.editQuotation', compact('quotation'));
 }
 
 // Update quotation

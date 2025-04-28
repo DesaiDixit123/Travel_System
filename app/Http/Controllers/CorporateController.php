@@ -58,9 +58,9 @@ class CorporateController extends Controller
     public function index()
     {
 
-        $corporates = Corporate::paginate(5);
+        $corporates = Corporate::paginate(10);
         // $corporates = Corporate::all(); // Get all records
-        return view('laravel-examples.user-profile', compact('corporates')); // Corrected view path
+        return view('Pages.Corporate', compact('corporates')); // Corrected view path
     }
     
 

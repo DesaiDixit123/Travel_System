@@ -30,7 +30,7 @@
                     </form>
 
                     {{-- Step 2: Corporate & Quotation Info --}}
-                    <form action="{{ route('quotations.store') }}" method="POST" id="quotationForm" style="display: none;">
+                    <form id="quotationForm" style="display: none;">
                         @csrf
 
                         <input type="hidden" name="employee_id_hidden" id="employee_id_hidden">
@@ -51,8 +51,8 @@
                             <input type="email" name="corporate_email" class="form-control" placeholder="Enter corporate email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="corporate_email" class="form-label">Employee Email</label>
-                            <input type="email" name="employee_email" class="form-control" placeholder="Enter corporate email" required>
+                            <label for="employee_email" class="form-label">Employee Email</label>
+                            <input type="email" name="employee_email" class="form-control" placeholder="Enter employee email" required>
                         </div>
 
                         <div class="mb-3">
@@ -87,19 +87,12 @@
                             <textarea name="other_expenses" class="form-control" rows="3" placeholder="Enter other expenses..."></textarea>
                         </div>
 
-                        {{-- New Quotation Field --}}
                         <div class="mb-3">
                             <label for="quotation" class="form-label">Quotation</label>
-                            <textarea name="Quotation" class="form-control" rows="3" placeholder="Enter your quotation..."></textarea>
+                            <textarea name="quotation" class="form-control" rows="3" placeholder="Enter your quotation..." required></textarea>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            {{-- WhatsApp Share Button --}}
-                            <button type="button" id="shareOnWhatsapp" class="btn btn-success">
-                                Share on WhatsApp
-                            </button>
-
-                            {{-- Submit Button --}}
+                        <div class="d-flex justify-content-end">
                             <button type="submit" class="btn bg-gradient-success">Submit Quotation</button>
                         </div>
                     </form>
@@ -108,6 +101,21 @@
             </div>
         </div>
     </div>
+</div>
+
+{{-- Popup Modal --}}
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="successModalLabel">Quotation Submitted Successfully!</h5>
+      </div>
+      <div class="modal-body text-center">
+        <button type="button" id="shareWhatsapp" class="btn btn-success mb-2">Share on WhatsApp</button><br>
+        <button type="button" id="goBack" class="btn btn-secondary">Back</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -122,16 +130,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Hide first step
                         document.getElementById('stepOneForm').style.display = 'none';
-                        // Show second step
                         document.getElementById('quotationForm').style.display = 'block';
 
-                        // Fill hidden values
                         document.getElementById('employee_id_hidden').value = empId;
                         document.getElementById('employee_mobile_hidden').value = mobile;
 
-                        // Fill form fields
                         document.querySelector('input[name="company_name"]').value = data.employee.company_name || '';
                         document.querySelector('input[name="employee_name"]').value = data.employee.name || '';
                         document.querySelector('input[name="limit"]').value = data.employee.limit || '';
@@ -153,40 +157,63 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Share on WhatsApp Button
-    document.getElementById('shareOnWhatsapp').addEventListener('click', function () {
+    // Submit Quotation Form
+    document.getElementById('quotationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch("{{ route('quotations.store') }}", {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+    console.log('Quotation Response:', data); // Debugging line to see the response
+    if (data.success) {
+        var myModal = new bootstrap.Modal(document.getElementById('successModal'));
+        myModal.show();
+        
+        window.latestQuotationId = data.quotation_id; // Capture the quotation ID
+    } else {
+        alert('Failed to submit quotation.');
+    }
+})
+
+        .catch(error => {
+            console.error(error);
+            alert('Error submitting quotation.');
+        });
+    });
+
+    document.getElementById('shareWhatsapp').addEventListener('click', function () {
     const employeeName = document.querySelector('input[name="employee_name"]').value.trim();
-        const quotation = document.querySelector('textarea[name="quotation"]').value.trim();
+    const quotation = document.querySelector('textarea[name="quotation"]').value.trim();
+    const corporateMobile = document.querySelector('input[name="corporate_mobile"]').value.trim();
+    const previewLink = `http://localhost:8000/quotations/${window.latestQuotationId}`;
 
-        // Dynamically get the quotation ID from the URL (assuming URL is in the format /quotations/{quotationId})
-        const urlParts = window.location.pathname.split('/');
-        const quotationId = urlParts[urlParts.length - 1]; // Last part of the URL is the quotation ID
-
-        // Construct the preview link
-        const previewLink = `http://localhost:8000/quotations/${quotationId}`;
-
-        // Construct the WhatsApp message with only the employee name, quotation, and preview link
-        const message = `
+    const message = `
 *Quotation Details*:
 
 👤 *Employee Name:* ${employeeName}
 📝 *Quotation:* ${quotation}
 
 🔗 *View the quotation here:* ${previewLink}
-        `.trim();
+    `.trim();
 
-        const encodedMessage = encodeURIComponent(message);
-        
-        // Ensure that corporate mobile number is fetched correctly
-        const corporateMobile = document.querySelector('input[name="corporate_mobile"]').value.trim();
-        
-        // Check if the corporate mobile number exists
-        if (corporateMobile) {
-            const whatsappURL = `https://wa.me/${corporateMobile}?text=${encodedMessage}`;
-            window.open(whatsappURL, '_blank');
-        } else {
-            alert("Please enter a valid corporate mobile number.");
-        }
+    const encodedMessage = encodeURIComponent(message);
+
+    if (corporateMobile) {
+        const whatsappURL = `https://wa.me/${corporateMobile}?text=${encodedMessage}`;
+        window.open(whatsappURL, '_blank'); // Open WhatsApp link
+    } else {
+        alert("Corporate mobile number missing.");
+    }
+});
+
+    // Go Back Button
+    document.getElementById('goBack').addEventListener('click', function () {
+        window.location.href = "{{ route('quotations.index') }}"; // Redirect back to quotations list
     });
 });
 </script>
