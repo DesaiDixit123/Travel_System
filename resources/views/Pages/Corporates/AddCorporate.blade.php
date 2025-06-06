@@ -1,25 +1,18 @@
-@extends('layouts.user_type.guest')
+@extends('layouts.user_type.auth')
 
 @section('content')
 
   <section class="min-vh-100 mb-8">
-    <div class="page-header align-items-start min-vh-50 pt-5 pb-11 mx-3 border-radius-lg" style="background-image: url('../assets/img/curved-images/curved14.jpg');">
-      <span class="mask bg-gradient-dark opacity-6"></span>
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-5 text-center mx-auto">
-            <h1 class="text-white mb-2 mt-5">Welcome!</h1>
-            <p class="text-lead text-white">Use these awesome forms to login or create new account in your project for free.</p>
-          </div>
-        </div>
-      </div>
+    <div class="page-header align-items-start min-vh-50 pt-5 pb-11 mx-3 border-radius-lg" ">
+     
+      
     </div>
     <div class="container">
       <div class="row mt-lg-n10 mt-md-n11 mt-n10">
         <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
           <div class="card z-index-0">
             <div class="card-header text-center pt-4">
-              <h5>Register with</h5>
+              <h5>Corporate Signup</h5>
             </div>
             
             <div class="card-body">
@@ -69,7 +62,7 @@
     @enderror
   </div>
 
-  <div class="mb-3">
+  <div class="mb-3" style="display: none;">
     <select class="form-control" name="department" id="department">
       <option value="">Select Department</option>
       <option value="sales" {{ old('department') == 'sales' ? 'selected' : '' }}>Sales</option>
@@ -103,7 +96,6 @@
     <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign up</button>
   </div>
   
-  <p class="text-sm mt-3 mb-0">Already have an account? <a href="login" class="text-dark font-weight-bolder">Sign in</a></p>
 </form>
 
             </div>

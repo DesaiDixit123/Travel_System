@@ -15,7 +15,7 @@ class CorporateController extends Controller
     public function showForm()
     {
         
-        return view('session.register');
+        return view('Pages.Corporates.AddCorporate');
     }
 
     public function store(Request $request)
@@ -28,7 +28,6 @@ class CorporateController extends Controller
             'email' => 'required|email|unique:corporates',
             'password'=> 'required',
             'address' => 'required',
-            'department' => 'required',
             'agreement' => 'accepted',
         ]);
     
@@ -42,7 +41,6 @@ class CorporateController extends Controller
             'contact_number' => $request->contact_number,
             'email' => $request->email,
             'address' => $request->address,
-            'department' => $request->department,
             'password' => $request->password, // Store the plain password
         ]);
     
@@ -50,18 +48,57 @@ class CorporateController extends Controller
         // Mail::to($corporate->email)->send(new CorporateRegistrationMail($corporate, $password));
     
         // Redirect with success message
-        return redirect()->route('login')->with('success', 'Registration successful! Check your email.');
+        return redirect()->route('corporates.index')->with('success', 'Registration successful! Check your email.');
     }
     
 
 
     public function index()
     {
-
-        $corporates = Corporate::paginate(10);
-        // $corporates = Corporate::all(); // Get all records
-        return view('Pages.Corporate', compact('corporates')); // Corrected view path
+        $corporates = Corporate::orderBy('created_at', 'desc')->paginate(10);
+        return view('Pages.Corporates.Corporate', compact('corporates'));
     }
     
+
+     // 🔧 EDIT corporate form
+     public function edit($id)
+     {
+         $corporate = Corporate::findOrFail($id);
+         return view('Pages.Corporates.EditCorporate', compact('corporate'));
+     }
+ 
+     // 🔄 UPDATE corporate record
+     public function update(Request $request, $id)
+     {
+         $request->validate([
+             'company_name' => 'required',
+             'contact_person' => 'required',
+             'designation' => 'required',
+             'contact_number' => 'required',
+             'email' => 'required|email|unique:corporates,email,' . $id,
+             'address' => 'required',
+         ]);
+ 
+         $corporate = Corporate::findOrFail($id);
+ 
+         $corporate->update([
+             'company_name' => $request->company_name,
+             'contact_person' => $request->contact_person,
+             'designation' => $request->designation,
+             'contact_number' => $request->contact_number,
+             'email' => $request->email,
+             'address' => $request->address,
+         ]);
+ 
+         return redirect()->route('corporates.index')->with('success', 'Corporate updated successfully.');
+     }
+ 
+    public function destroy($id)
+    {
+        $corporate = Corporate::findOrFail($id);
+        $corporate->delete();
+
+        return redirect()->route('corporates.index')->with('success', 'Corporate deleted successfully.');
+    }
 
 }

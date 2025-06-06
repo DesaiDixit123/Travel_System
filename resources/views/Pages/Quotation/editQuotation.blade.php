@@ -7,7 +7,7 @@
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Edit Quotation</h4>
@@ -18,19 +18,60 @@
                         @method('PUT')
 
                         <div class="mb-3">
-                            <label for="flight" class="form-label">Flight</label>
-                            <input type="text" name="flight" id="flight" class="form-control" value="{{ $quotation->flight }}" required>
+                            <label for="invoice_date" class="form-label">Invoice Date</label>
+                            <input type="date" name="invoice_date" id="invoice_date" class="form-control" value="{{ $quotation->invoice_date }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="other_expenses" class="form-label">Other Expenses</label>
-                            <input type="text" name="other_expenses" id="other_expenses" class="form-control" value="{{ $quotation->other_expenses }}" required>
+                            <label for="travel_from" class="form-label">Travel From</label>
+                            <input type="text" name="travel_from" id="travel_from" class="form-control" value="{{ $quotation->travel_from }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="Quotation" class="form-label">Quotation</label>
-                            <input type="text" name="Quotation" id="Quotation" class="form-control" value="{{ $quotation->Quotation }}" required>
+                            <label for="travel_to" class="form-label">Travel To</label>
+                            <input type="text" name="travel_to" id="travel_to" class="form-control" value="{{ $quotation->travel_to }}" required>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="bill_no" class="form-label">Bill No</label>
+                            <input type="text" name="bill_no" id="bill_no" class="form-control" value="{{ $quotation->bill_no }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="from_to" class="form-label">From-To</label>
+                            <input type="text" name="from_to" id="from_to" class="form-control" value="{{ $quotation->from_to }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" name="amount" id="amount" class="form-control" value="{{ $quotation->amount }}" required>
+                        </div>
+
+                  <div class="mb-3">
+    <label class="form-label">Include</label>
+    <div class="d-flex flex-wrap gap-3">
+        @php
+            $selectedIncludes = json_decode($quotation->include, true) ?? [];
+            $options = ['Flight', 'Train', 'Hotel'];
+        @endphp
+        @foreach($options as $option)
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="include[]"
+                    value="{{ $option }}"
+                    id="include_{{ $option }}"
+                    {{ in_array($option, $selectedIncludes) ? 'checked' : '' }}
+                >
+                <label class="form-check-label" for="include_{{ $option }}">
+                    {{ $option }}
+                </label>
+            </div>
+        @endforeach
+    </div>
+</div>
+
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="submit" class="btn btn-success">Update</button>

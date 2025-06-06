@@ -8,7 +8,14 @@
             </ol>
             <h6 class="font-weight-bolder mb-0 text-capitalize">{{ str_replace('-', ' ', Request::path()) }}</h6>
         </nav>
+
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4 d-flex justify-content-end" id="navbar"> 
+        @if(session('company_name'))
+  <div >
+  <p style="font-size: 23px;font-weight: bold;padding-right: 50px;">Welcome, {{ session('company_name') }}</p>
+  </div>
+@endif
+
             <div class="nav-item d-flex align-self-end">
             <a href="{{ url('/logout')}}" class="btn active mb-0 text-white" role="button" style="background-color:  #3b5998;">
                     <i class="fa fa-user me-sm-1"></i>

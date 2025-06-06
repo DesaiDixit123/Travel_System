@@ -29,8 +29,8 @@ use App\Http\Controllers\QuotationController;
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [SessionsController::class, 'create'])->name('login');
     Route::post('/login', [SessionsController::class, 'store'])->name('login.store');
-    Route::get('/register', [CorporateController::class, 'showForm'])->name('register');
-    Route::post('/register', [CorporateController::class, 'store']);
+    // Route::get('/register', [CorporateController::class, 'showForm'])->name('register');
+    // Route::post('/register', [CorporateController::class, 'store']);
     Route::get('/login/forgot-password', [ResetController::class, 'create']);
     Route::post('/forgot-password', [ResetController::class, 'sendEmail']);
     Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
@@ -47,16 +47,31 @@ Route::group(['middleware' => 'auth'], function () {
         return view('dashboard');
     })->name('dashboard')->middleware('corporate.auth');
     Route::get('/Corporate-Details', [CorporateController::class, 'index'])->name('corporates.index');
+
+
+    Route::get('/add-corporate', [CorporateController::class, 'showForm'])->name('addCorporate.create');
+Route::post('/register', [CorporateController::class, 'store'])->name('corporates.store');
+Route::get('/corporates/{id}/edit', [CorporateController::class, 'edit'])->name('corporates.edit');
+Route::put('/corporates/{id}', [CorporateController::class, 'update'])->name('corporates.update');
+Route::delete('/corporates/{id}', [CorporateController::class, 'destroy'])->name('corporates.destroy');
     Route::get('tables', function () {
 		return view('tables');
 	})->name('tables');
   Route::get('/Employees', [EmployeeController::class, 'index'])->name('employees.index');
-  
+  // Show edit form
+Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+
+// Update employee
+Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
+
+// Delete employee
+Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
   Route::get('/Add-Employees', [EmployeeController::class, 'create'])->name('employees.create');
   Route::get('/Quotations', [QuotationController::class, 'create'])->name('quotations.create');
   Route::get('/Add-Quotation', [QuotationController::class, 'index'])->name('quotations.index');
   ;
   Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
+Route::post('/quotations/upload/{id}', [QuotationController::class, 'upload'])->name('quotations.upload');
 
     Route::post('/employees/store', [EmployeeController::class, 'store'])->name('employees.store');
     Route::get('quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');

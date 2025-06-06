@@ -8,20 +8,27 @@ class Quotation extends Model
 {
     protected $fillable = [
         'employee_id',
-        'employee_mobile',
-        'corporate_mobile',
-        'corporate_email',
-        'employee_email',
-        'company_name',
+
+
         'employee_name',
-        'department',
-        'hotel_limit',
-        'flight',
-        'other_expenses',
-        'quotation',
+
+        'employee_mobile',
+        'employee_email',
+
+        'company_name',
+        'corporate_email',
+        'corporate_mobile',
+        'invoice_date',
+        'travel_from',
+        'travel_to',
+        'bill_no',
+        'from_to',
+        'amount',
+        'include',
         'status',
+        'email_screenshot',
     ];
-    
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

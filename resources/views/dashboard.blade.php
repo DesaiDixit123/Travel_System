@@ -2,7 +2,14 @@
 
 @section('content')
 
+</style>
   <div class="row">
+    <div class="col-md-12 "><h1>Corporate Booking Solution
+</h1>
+<img src="assets/img/dashboard.jpg" width="100%">
+        </div>  
+      </div>
+  <div class="row" style="display:none">
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
       <div class="card">
         <div class="card-body p-3">
@@ -542,8 +549,8 @@
               </tbody>
             </table>
           </div>
-        </div> -->
-      </div> -->
+        </div> -->Explore the world like never before. TC Holidays is your ultimate travel companion
+      </div> 
     </div>
     <!-- <div class="col-lg-4 col-md-6">
       <div class="card h-100">

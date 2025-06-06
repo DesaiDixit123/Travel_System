@@ -43,4 +43,19 @@ class Corporate extends Authenticatable
     {
         return $this->contact_person . ' - ' . $this->company_name;
     }
+
+
+   // Corporate.php model
+protected static function booted()
+{
+    static::deleted(function () {
+        // Get all valid company names
+        $validCompanies = Corporate::pluck('company_name')->toArray();
+
+        // Delete employees with company_name not in valid list
+        Employee::whereNotIn('company_name', $validCompanies)->delete();
+    });
+}
+
+
 }

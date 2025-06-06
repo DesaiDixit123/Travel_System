@@ -66,7 +66,7 @@
     @enderror
   </div>
 
-  <div class="mb-3">
+  <div class="mb-3" style="display: none;">
     <select class="form-control" name="department" id="department">
       <option value="">Select Department</option>
       <option value="sales" {{ old('department') == 'sales' ? 'selected' : '' }}>Sales</option>

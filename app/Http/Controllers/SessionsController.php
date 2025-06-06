@@ -14,39 +14,46 @@ class SessionsController extends Controller
 
     public function store(Request $request)
     {
-      // Hardcoded credentials for testing
-    $defaultEmail = 'admin@gmail.com';
-    $defaultPassword = '1234567890';
-
-    if ($request->email === $defaultEmail && $request->password === $defaultPassword) {
-        Auth::guard('corporate')->loginUsingId(1); // or Auth::login($adminUser)
-        $request->session()->regenerate();
+        // Hardcoded credentials for testing
+        $defaultEmail = 'admin@gmail.com';
+        $defaultPassword = '1234567890';
     
-        // ✅ store role info in session
-        session(['user_role' => 'admin']);
-    
-        return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
-    } else {
-        // Try corporate login
-        $corporate = \App\Models\Corporate::where('email', $request->email)
-            ->where('password', $request->password) // Plaintext match
-            ->first();
-    
-        if ($corporate) {
-            Auth::guard('corporate')->login($corporate);
+        if ($request->email === $defaultEmail && $request->password === $defaultPassword) {
+            Auth::guard('corporate')->loginUsingId(7); // or Auth::login($adminUser)
             $request->session()->regenerate();
     
-            // ✅ store role info in session
-            session(['user_role' => 'corporate']);
+            // You can't access $corporate here since it's not defined
+            // So just store static role, not company_name
+            session([
+                'user_role' => 'admin',
+                'company_name' => 'Admin',
+            ]);
+    
     
             return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
         } else {
-            return back()->withErrors(['email' => 'Invalid credentials']);
+            // Try corporate login
+            $corporate = \App\Models\Corporate::where('email', $request->email)
+                ->where('password', $request->password) // Plaintext match
+                ->first();
+    
+            if ($corporate) {
+                Auth::guard('corporate')->login($corporate);
+                $request->session()->regenerate();
+    
+                // ✅ store role info and company name in session
+                session([
+                    'user_role' => 'corporate',
+                    'company_name' => $corporate->company_name,
+                ]);
+    
+                return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+            } else {
+                return back()->withErrors(['email' => 'Invalid credentials']);
+            }
         }
     }
     
-    }
-
     public function destroy(Request $request)
     {
         \Log::info('Logging out user'); // Debug log
